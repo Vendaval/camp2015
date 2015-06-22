@@ -6,7 +6,6 @@ The following two questions about the `mtcars` dataset will be treated: Is an au
 
 Having analysed the data and built the regression models, this analysis proves, with a 95% confidence, that the Manual transmission system is better in terms of Miles per Gallon.
 
-**Acknowledgement**: this tutorial has been largely inspired by David Álvarez Pons' linear modelling example proposed on [RPubs](http://rpubs.com/).
 ## Exploratory Analysis
 The mtcars dataset consists on data extracted from the 1974 Motor Trend US magazine, and comprises fuel consumption and 10 aspects of automobile design and performance for 32 automobiles.
 
