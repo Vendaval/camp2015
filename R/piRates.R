@@ -16,7 +16,7 @@ world <- subset(world, region != "Antarctica") # inteRcouRse AntaRctica
  
 # yeaRs we want to loop thoRugh
 ends <- 1980:2014
- 
+
 # loop thRough, extRact data, build plot, save plot: BOOM
 for (end in ends) {
   png(filename=sprintf("./figures/arrr-%d.png",end),width=500,height=250,bg="white") # change to 1000x500 or laRgeR
@@ -31,6 +31,6 @@ for (end in ends) {
   print(p)
   dev.off()
 }
- 
+
 # requires imagemagick
 system("cd figures/ ; convert -delay 45 -loop 0 arrr*g arrr500.gif")

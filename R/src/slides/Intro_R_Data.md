@@ -153,7 +153,7 @@ We can also access variables directly by using their names, either with **object
 
 # Crazy Examples
 
-## Random Text Generation
+## DiGram Text Generation
 	library(XML)
 	stem <- "http://www.5novels.com/classics/u5688"
 	hobbit <- NULL
@@ -167,12 +167,13 @@ We can also access variables directly by using their names, either with **object
 	}
 	hobbit = paste(hobbit, collapse=' ')
 
-## Random Text Generation -- 2
+## DiGram Text Generation -- 2
 	library(ngram)
 	ng2 <- ngram(hobbit, n=2)
 	
-	babble(ng2, 128, seed=987654)
-	
+	babble(ng2, 24, seed=54684684)
+
+*The spider evidently was not drawing-room fashion at all, my dear sir—and I do know my name, though he always called himself ‘my precious’.*
 
 ## PiRates
 
