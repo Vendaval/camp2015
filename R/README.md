@@ -19,6 +19,36 @@ If you're also looking for a good tutorial on R's data structures you can take a
 
 ## Pre-requisites
 
+### Configure your connection to UL-HPC cluster
+Run the following commands in a terminal (substituting *yourlogin* with the login name you received from us):
+
+        (laptop)$> ssh -p 8022 yourlogin@access-chaos.uni.lu
+
+If you want to connect to the gaia cluster, 
+
+        (laptop)$> ssh -p 8022 yourlogin@access-gaia.uni.lu
+
+Now you probably want to avoid taping this long command to connect to the platform. You can customize SSH aliases for that. Edit the file `~/.ssh/config` (create it if it does not already exist) and adding the following entries: 
+
+        Host chaos-cluster
+            Hostname access-chaos.uni.lu
+
+        Host gaia-cluster
+            Hostname access-gaia.uni.lu
+
+        Host *-cluster
+            User yourlogin
+            Port 8022
+            ForwardAgent no
+
+Now you shall be able to issue the following (simpler) command to connect to the cluster and obtain the welcome banner: 
+
+		(laptop)$> ssh gaia-cluster
+
+		(laptop)$> ssh chaos-cluster
+
+In the sequel, we assume these aliases to be defined. 
+
 ### Optional: On your local machine
 First of all, let's install R. You will find releases for various distributions available at [CRAN Archive](http://cran.r-project.org/).
 Once installed, to use R interactive session interface, simply open a terminal and type:
