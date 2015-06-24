@@ -174,5 +174,7 @@ We can also access variables directly by using their names, either with **object
 	babble(ng2, 128, seed=987654)
 	
 
+## PiRates
 
+\animategraphics[autoplay,loop,height=5cm]{1}{../../figures/arrr-}{2013}{2014} 
 
