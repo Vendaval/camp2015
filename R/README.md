@@ -4,7 +4,7 @@ Copyright (c) 2014 Joseph Emeras <joseph.emeras@uni.lu>
 
 -------------------
 # R Tutorial
-Through this tutorial you will learn how to use R from your local machine or from one of the [UL HPC platform](http://hpc.uni.lu) clusters.
+Through this tutorial you will learn how to use R from your local machine and from the cluster.
 We will also use the `ggplot` library to generate nice graphics and export them as pdf files. 
 Then, we will see how to organize and group data. Finally we will illustrate how R can benefit from multicore and cluster parallelization.
 
@@ -19,33 +19,24 @@ If you're also looking for a good tutorial on R's data structures you can take a
 
 ## Pre-requisites
 
-### Configure your connection to UL-HPC cluster
-Run the following commands in a terminal (substituting *yourlogin* with the login name you received from us):
+### Configure your connection to Guane cluster
+Edit the file `~/.ssh/config` (create it if it does not already exist) and adding the following entries: 
 
-        (laptop)$> ssh -p 8022 yourlogin@access-chaos.uni.lu
+	Host toctoc
+	        User *yourlogin*
+	        Hostname toctoc.sc3.uis.edu.co
+	        ForwardX11 yes
 
-If you want to connect to the gaia cluster, 
+	Host guane
+	        User *yourlogin*
+	        Hostname guane
+	        ForwardX11 yes
+	        ProxyCommand ssh -q toctoc "nc -q 0 %h %p"
 
-        (laptop)$> ssh -p 8022 yourlogin@access-gaia.uni.lu
 
-Now you probably want to avoid taping this long command to connect to the platform. You can customize SSH aliases for that. Edit the file `~/.ssh/config` (create it if it does not already exist) and adding the following entries: 
+Now you shall be able to issue the following command to connect to the cluster and obtain the welcome banner: 
 
-        Host chaos-cluster
-            Hostname access-chaos.uni.lu
-
-        Host gaia-cluster
-            Hostname access-gaia.uni.lu
-
-        Host *-cluster
-            User yourlogin
-            Port 8022
-            ForwardAgent no
-
-Now you shall be able to issue the following (simpler) command to connect to the cluster and obtain the welcome banner: 
-
-		(laptop)$> ssh gaia-cluster
-
-		(laptop)$> ssh chaos-cluster
+		(laptop)$> ssh guane
 
 In the sequel, we assume these aliases to be defined. 
 
@@ -59,24 +50,20 @@ You will also find handy to use the [R-Studio](https://www.rstudio.com/) graphic
 Thus you can use whether R interactive shell or R-Studio embedded shell.
 
 ### On the cluster
-R is already available in `Chaos` and `Gaia` clusters as a module. 
-The first step is the reservation of a resource. Connect to your favorite cluster frontend (here: `gaia`)
+R is installed on guane in the directory: `~jemeras/bin/R`. In order to use it you have to add it to your path. Edit your `.bashrc` file and add:
 
-    jdoe@localhost:~$ ssh gaia-cluster
+	export PATH=~jemeras/bin:$PATH
+Note that you have to source your .bashrc file to make these modifications active. You should also add `source .bashrc` in your `.profile` file.
+
+The first step is the reservation of a resource. Connect to the cluster frontend
+
+    jdoe@localhost:~$ ssh guane
 
 Once connected to the user frontend, book 1 core for half an hour (as we will use R in single-threaded mode, we will need only one core).
 
     jdoe@access:~$ oarsub -I -l core=1,walltime="00:30:00"
 
-When the job is running and you are connected load R module (version compiled with Intel Compiler).
-For a complete list of availbale modules see: [Software page](https://hpc.uni.lu/users/software/).
-
-    jdoe@access:~$ module load lang/R/3.2.0-ictce-7.3.5-bare
-
-<!--
-    jdoe@access:~$ module load R/3.0.2-goolf-1.4.10
--->
-Now you should be able to invoke R and see something like this:
+When the job is running and you are connected load R and see something like this:
 
     jdoe@cluster-node-1:~$ R
 	R version 3.2.0 (2015-04-16) -- "Full of Ingredients"
@@ -156,12 +143,6 @@ Thus, when loading `ggplot2` library, this dataset is available under the name: 
     movies = read.table(dest_file, sep="\t", header=TRUE, quote="", comment="")				# `read.table()` function reads a file and stores it in a data.frame object
 
 
-(OPTIONAL 2) An third way to get the dataset is by using the `readr` library that can uncompress by itself:
-
-	library(readr)
-	system("wget http://had.co.nz/data/movies/movies.tab.gz")
-	movies = read_tsv("movies.tab.gz", col_names = TRUE)
-
 Now let's take a (reproducible) sample of 1000 movies and plot their distribution regarding their rating.
 
     library(ggplot2)																		# load ggplot2 library to use packages functions
@@ -172,7 +153,7 @@ Now let's take a (reproducible) sample of 1000 movies and plot their distributio
 
 Now you retrieve the generated pdf on your local workstation for visualization:
 
-    jdoe@localhost:~$ scp gaia-cluster:movies_hist.pdf .
+    jdoe@localhost:~$ scp guane:movies_hist.pdf .
 
 `ggplot2` proposes many functions to plot data according to your needs. Do not hesitate to wander in the [ggplot2 documentation](http://docs.ggplot2.org/current/) and to read at provided examples to better understand how to use it.
 The `ggsave()` function is convenient to export ggplot graphics as .pdf or .png files
@@ -371,21 +352,15 @@ DT[,c(min(v), max(v)),by=x]
 -->
 
 ## Parallel R
-The first part of the tutorial is now over, you can connect to `gaia` cluster and submit an other job requesting several machines.
+The first part of the tutorial is now over, you can connect to `guane` cluster and submit an other job requesting several machines.
 
-	jdoe@localhost:~$ ssh gaia-cluster
+	jdoe@localhost:~$ ssh guane
 	
     jdoe@access:~$ oarsub -I -l nodes=2,walltime=1
 
-<!--
-When the job is running and you are connected load R module (version compiled with GCC).
 
-    jdoe@access:~$ module load R/3.0.2-goolf-1.4.10
--->
+When the job is running and you are connected run R.
 
-When the job is running and you are connected load R module (version compiled with Intel Compiler), then run R.
-
-    jdoe@access:~$ module load lang/R/3.2.0-ictce-7.3.5-bare
 	jdoe@access:~$ R
 
 
@@ -418,10 +393,10 @@ To parallelize the lapply function we can use `mclapply()` from `parallel` packa
 Using several cores makes the process shorter.
 
     > library(parallel)
-    > as.data.frame(cbind(dest=dests, nb=mclapply(dests, count_flights, mc.cores=12)))
+    > as.data.frame(cbind(dest=dests, nb=mclapply(dests, count_flights, mc.cores=detectCores())))
 	
 	
-	> microbenchmark(MCLAPPLY=mclapply(dests, count_flights, mc.cores=12), times=10)  # or use `detectCores()` from `parallel` package instead of giving cores value. 
+	> microbenchmark(MCLAPPLY=mclapply(dests, count_flights, mc.cores=detectCores()), times=10) 
 	Unit: milliseconds
 	     expr      min       lq   median       uq     max neval
 	 MCLAPPLY 233.8035 235.1089 235.9138 236.6393 263.934    10
@@ -448,15 +423,6 @@ Then quit your current R session but **do not** end your current oar job.
 ### Cluster Parallelization
 The `parLapply()` function will create a cluster of processes, which could even reside on different machines on the network, and they communicate via TCP/IP or MPI in order to pass the tasks and results between each other.
 Thus you have to load necessary packages and export necessary data and functions to the global environment of the cluster workers.
-
-
-First, add the module loading at bash login too for enabling it on the nodes. To do so, within a shell type:
-
-    echo 'module load lang/R/3.2.0-ictce-7.3.5-bare' >> ~/.bash_login		# /!\ TO REMOVE AT THE END OF PS /!\
-	module purge
-	module load lang/R/3.2.0-ictce-7.3.5-bare
-
-**Warning: do not forget to clean your ~/.bash_login file after the PS (remove the 'module load lang/R/3.2.0-ictce-7.3.5-bare' line).**
 
 #### Socket Communications
 
@@ -508,15 +474,9 @@ As we are using R compiled with Intel compiler we will have to specify manually 
 
 	> install.packages("Rmpi",
 	                   configure.args =
-	                   c(paste("--with-Rmpi-include=",Sys.getenv("EBROOTIMPI"),"/include64",sep=""),
-	                     paste("--with-Rmpi-libpath=",Sys.getenv("EBROOTIMPI"),"/lib64",sep=""),
-	                     paste("--with-mpi=",Sys.getenv("EBROOTIMPI"),sep=""),
+	                   c(paste0("--with-Rmpi-include=","/usr/local/include"),
+	                     paste0("--with-Rmpi-libpath=","/usr/local/lib"),
 	                     "--with-Rmpi-type=OPENMPI"))
-
-**NOTE**: if the installation fails you can try using the module with `Rmpi` already installed:
-
-	module purge
-	module load lang/R/3.2.0-ictce-7.3.5-Rmpi
 
 
 Then, outside of R shell write a file named `parallelAirDests.R` with the following code.
@@ -579,26 +539,6 @@ Unit: nanoseconds
 -->
 
 
-
-<!--
-#### MPI Communications
-
-In this section we will use R with MPI connections. We will use the OpenMPI implementation and thus we need to load a custom R easybuild module.
-
-First unload all previously loaded modules.
-
-	module purge
-
-Then load the custom module
-
-	module use /home/users/jemeras/.easybuild/modules/all/
-	module load lang/R/3.2.0-goolf-1.4.10-bare
-
-Install `Rmpi` and `snow` packages in R (you might need to specify manually the MPI type before installing the package, this can be done via the RMPI_TYPE env variable).
-
-	> Sys.setenv(RMPI_TYPE='OPENMPI')
-	> install.packages("Rmpi", "snow")
--->
 
 
 ### Usefull links
