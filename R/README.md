@@ -59,9 +59,9 @@ The first step is the reservation of a resource. Connect to the cluster frontend
 
     jdoe@localhost:~$ ssh guane
 
-Once connected to the user frontend, book 1 core for half an hour (as we will use R in single-threaded mode, we will need only one core).
+Once connected to the user frontend, book 1 core for one and a half hour (as we will use R in single-threaded mode, we will need only one core).
 
-    jdoe@access:~$ oarsub -I -l core=1,walltime="00:30:00"
+    jdoe@access:~$ oarsub -I -l core=1,walltime="01:30:00"
 
 When the job is running and you are connected load R and see something like this:
 
@@ -356,7 +356,7 @@ The first part of the tutorial is now over, you can connect to `guane` cluster a
 
 	jdoe@localhost:~$ ssh guane
 	
-    jdoe@access:~$ oarsub -I -l nodes=2,walltime=1
+    jdoe@access:~$ oarsub -I -l nodes=2,walltime=2
 
 
 When the job is running and you are connected run R.
