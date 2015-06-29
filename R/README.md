@@ -468,8 +468,9 @@ Finalize and cleanup things.
 
 #### MPI Communications
 In this section we will use the same example as previously but with MPI connections. 
-For that purpose we need to install two libraries: `rmpi` and `snow`.
+For that purpose we will use two libraries: `rmpi` and `snow`.
 
+<!--
 As we are using R compiled with Intel compiler we will have to specify manually some paths and which version of MPI we are using when installing `rmpi`.
 
 	> install.packages("Rmpi",
@@ -477,9 +478,9 @@ As we are using R compiled with Intel compiler we will have to specify manually 
 	                   c(paste0("--with-Rmpi-include=","/usr/local/include"),
 	                     paste0("--with-Rmpi-libpath=","/usr/local/lib"),
 	                     "--with-Rmpi-type=OPENMPI"))
+-->
 
-
-Then, outside of R shell write a file named `parallelAirDests.R` with the following code.
+Outside of R shell write a file named `parallelAirDests.R` with the following code.
 
 **Warning**: when using parallelization in R, please keep in mind that communication is much slower than computation. Thus if your problem is involving a long computation then you are right to use it, otherwise, if your problem is a large quantity of data you must use `data.table` or `dplyr`.
 
