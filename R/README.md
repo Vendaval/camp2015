@@ -13,7 +13,7 @@ If you're also looking for a good tutorial on R's data structures you can take a
  
 **Conventions used in this tutorial:**
 
-* commands that have to be typed on the cluster start with a prompt like this: `jdoe@access:~$ `
+* commands that have to be typed on the cluster start with a prompt like this: `jdoe@guane:~$ `
 * commands that have to be typed on your local machine start with a prompt like this: `jdoe@localhost:~$ `
 * code blocks containing one or several `>` should not be pasted "as it", they are meant for you to observe the output of each function; others can be pasted in R terminal "as it".
 
@@ -36,7 +36,7 @@ Edit the file `~/.ssh/config` (create it if it does not already exist) and addin
 
 Now you shall be able to issue the following command to connect to the cluster and obtain the welcome banner: 
 
-		(laptop)$> ssh guane
+	jdoe@localhost:~$ ssh guane
 
 In the sequel, we assume these aliases to be defined. 
 
@@ -61,7 +61,7 @@ The first step is the reservation of a resource. Connect to the cluster frontend
 
 Once connected to the user frontend, book 1 core for one and a half hour (as we will use R in single-threaded mode, we will need only one core).
 
-    jdoe@access:~$ oarsub -I -l core=1,walltime="01:30:00"
+    jdoe@guane:~$ oarsub -I -l core=1,walltime="01:30:00"
 
 When the job is running and you are connected load R and see something like this:
 
@@ -356,12 +356,12 @@ The first part of the tutorial is now over, you can connect to `guane` cluster a
 
 	jdoe@localhost:~$ ssh guane
 	
-    jdoe@access:~$ oarsub -I -l nodes=2,walltime=2
+    jdoe@guane:~$ oarsub -I -l nodes=2,walltime=2
 
 
 When the job is running and you are connected run R.
 
-	jdoe@access:~$ R
+	jdoe@guane:~$ R
 
 
 We will use a large dataset (400K+ rows) to illustrate the effect of parallelization in R (as dataset is large, the following line may take time to complete depending on your network speed).
@@ -404,13 +404,13 @@ Using several cores makes the process shorter.
 
 It is nice to visualize all your cores working on your node with `htop` for example. You can connect to the same node from another terminal by typing:
 
-	jdoe@access:~$ oarstat -u
+	jdoe@guane:~$ oarstat -u
 	Job id     Name           User           Submission Date     S Queue
 	---------- -------------- -------------- ------------------- - ----------
 	6664321                   jdoe           2015-06-03 14:24:23 R default
 Note the `Job id` field. Put this job id in the next command:
 
-	jdoe@access:~$ oarsub -C 6664321
+	jdoe@guane:~$ oarsub -C 6664321
 Then `htop` will show you your cores working if you call again the `mclapply()` function.
 
 
@@ -475,8 +475,9 @@ As we are using R compiled with Intel compiler we will have to specify manually 
 
 	> install.packages("Rmpi",
 	                   configure.args =
-	                   c(paste0("--with-Rmpi-include=","/usr/local/include"),
-	                     paste0("--with-Rmpi-libpath=","/usr/local/lib"),
+	                   c(paste0("--with-Rmpi-include=","~jemeras/openmpi-1.8.6/build/ompi/include"),
+	                     paste0("--with-Rmpi-libpath=","~jemeras/openmpi-1.8.6/build/ompi/lib"),
+						 paste0("--with-mpi=","~jemeras/openmpi-1.8.6/build/ompi/"),
 	                     "--with-Rmpi-type=OPENMPI"))
 -->
 
